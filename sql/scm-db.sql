@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 28, 2020 at 11:03 PM
+-- Generation Time: Nov 08, 2020 at 06:53 AM
 -- Server version: 10.1.35-MariaDB
 -- PHP Version: 7.2.9
 
@@ -235,10 +235,11 @@ CREATE TABLE `available_items` (
 
 INSERT INTO `available_items` (`id`, `name`, `description`, `price`, `stock`) VALUES
 (1, 'Oak Wood Chair', 'An Oak Wood Chair is the best kind of chair.', 29.97, 100),
-(2, 'Maple Wood Chair', 'Maple is better than oak!', 29.98, 22),
+(2, 'Maple Wood Chair', 'Maple is better than oak!', 29.98, 21),
 (3, 'Oak Wood Rocking Chair', 'It rocks.', 34.99, 5),
 (4, 'Maple Stool', 'A wonderful stool made of maple.', 19.99, 0),
-(6, 'Oak Wood Table', 'A table made out of oak wood!', 50, 5);
+(6, 'Oak Wood Table', 'A table made out of oak wood!', 50, 2),
+(7, 'tmp', 'tmmmmp', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -385,9 +386,9 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `phone_number`, `role`, `first_name`, `last_name`) VALUES
 (1, 'Kim', 'password', 'yk4510kf@go.minnstate.edu', '', 'administrator', 'Kim', 'Pampusch'),
 (2, 'Bobby123', 'password', 'bobby@gmail.com', '6513333333', 'customer', 'Bobbyyyy', 'OneTwoThree'),
-(3, 'TransportTheStuff', 'password', 'transport@gmail.com', '', 'transportation_associate', 'Joe', 'Smith'),
-(6, 'transport_person', 'password', 'transporting@gmail.com', '', 'transportation_associate', 'transp', 'ort'),
-(7, 'user_test', 'password', 'gmail@gmail.com', '123', 'customer', 'kim', 'P');
+(7, 'user_test', 'password', 'gmail@gmail.com', '123', 'customer', 'kim', 'Pamp'),
+(10, 'driverrr', 'password', 'iDrive@gmail.com', '6511111111', 'transportation_associate', 'drive', 'car'),
+(11, 'admin', 'password', 'admin@gmail.com', '6125555555', 'administrator', 'ad', 'min');
 
 --
 -- Indexes for dumped tables
@@ -485,7 +486,7 @@ ALTER TABLE `order_item_relations`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Constraints for dumped tables
