@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2020 at 06:53 AM
+-- Generation Time: Nov 08, 2020 at 09:17 PM
 -- Server version: 10.1.35-MariaDB
 -- PHP Version: 7.2.9
 
@@ -40,6 +40,16 @@ BEGIN
 DELETE FROM `available_items` WHERE `available_items`.`id` = item_id;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_item_material_relation` (IN `relation_id` INT)  NO SQL
+BEGIN
+DELETE FROM `item_material_relations` WHERE `item_material_relations`.`id` = relation_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_material` (IN `material_id` INT)  NO SQL
+BEGIN
+DELETE FROM `materials` WHERE `materials`.`id` = material_id;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_order_item_relation` (IN `relation_id` INT)  MODIFIES SQL DATA
 BEGIN
 DECLARE order_id int;
@@ -52,6 +62,11 @@ SELECT COUNT(`order_item_relations`.`id`) INTO order_item_count FROM `order_item
 DELETE FROM `customer_orders` WHERE `customer_orders`.`id` = order_id AND order_item_count = 0;
 
 
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_material` (IN `name` VARCHAR(32), IN `qty` INT, IN `units` VARCHAR(24))  NO SQL
+BEGIN
+INSERT INTO `materials`(`name`, `quantity`, `units`) VALUES (name, qty, units);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_new_admin` (IN `username` VARCHAR(24), IN `psw` VARCHAR(32), IN `email` VARCHAR(64), IN `phone_number` VARCHAR(24), IN `last_name` VARCHAR(24), IN `first_name` VARCHAR(24))  NO SQL
@@ -108,6 +123,21 @@ BEGIN
 SELECT * FROM `available_items`;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `select_all_item_material_info` ()  NO SQL
+BEGIN
+
+SELECT `item_material_relations`.`id`, `available_items`.`name` AS 'Item Name', `materials`.`name` AS 'Material Name', `item_material_relations`.`quantity_of_material_required` AS 'Material Quantity',
+`materials`.`units` AS 'Units'
+FROM `available_items` INNER JOIN `item_material_relations` 
+ON (`available_items`.`id` = `item_material_relations`.`item_id`) LEFT JOIN `materials` ON (`item_material_relations`.`material_id` = `materials`.`id`);
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `select_all_materials` ()  NO SQL
+BEGIN
+SELECT * FROM `materials`;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `select_customer_info` (IN `customer_id` INT)  READS SQL DATA
 BEGIN
 SELECT `users`.`username`, `users`.`first_name`, `users`.`last_name`, `users`.`phone_number`, `users`.`email`, `customer_info`.`street_address`, `customer_info`.`city`, `customer_info`.`state`, `customer_info`.`zip_code`, `customer_info`.`card_number` 
@@ -117,16 +147,6 @@ END$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `select_customer_orders` (IN `customer_id` INT)  READS SQL DATA
 BEGIN
 SELECT `customer_orders`.`id` FROM `customer_orders` WHERE `customer_orders`.`customer_id` = customer_id ORDER BY `customer_orders`.`id` DESC;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `select_item_materials_info` (IN `item_id` INT)  NO SQL
-BEGIN
-
-SELECT `available_items`.`name` AS 'Item Name', `materials`.`name` AS 'Material Name', `item_material_relations`.`quantity_of_material_required` AS 'Material Quantity',
-`materials`.`units` AS 'Units'
-FROM `available_items` LEFT JOIN `item_material_relations` 
-ON (`available_items`.`id` = `item_material_relations`.`item_id`) LEFT JOIN `materials` ON (`item_material_relations`.`material_id` = `materials`.`id`) WHERE `available_items`.`id` = item_id;
-
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `select_item_stock` (IN `item_id` INT)  NO SQL
@@ -203,7 +223,7 @@ UPDATE `users` SET `username`=username,`email`=email,`phone_number`=phone,`first
 UPDATE `customer_info` SET `street_address`=street_address,`city`=city,`state`=state,`zip_code`=zip_code,`card_number`=card_number WHERE `customer_info`.`customer_id` = customer_id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_materials` (IN `material_id` INT, IN `name` VARCHAR(32), IN `quantity` INT, IN `units` VARCHAR(24))  MODIFIES SQL DATA
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_material` (IN `material_id` INT, IN `name` VARCHAR(32), IN `quantity` INT, IN `units` VARCHAR(24))  MODIFIES SQL DATA
 BEGIN
 UPDATE `materials` SET `name`=name, `quantity`=quantity, `units`=units WHERE `materials`.`id` = material_id;
 END$$
@@ -211,6 +231,11 @@ END$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_material_quantity` (IN `material_id` INT, IN `quantity` INT)  MODIFIES SQL DATA
 BEGIN
 UPDATE `materials` SET `quantity`=quantity WHERE `materials`.`id` = material_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_order_item_relation` (IN `relation_id` INT, IN `qty` INT)  MODIFIES SQL DATA
+BEGIN
+UPDATE `item_material_relations` SET `quantity_of_material_required`=qty WHERE `item_material_relations`.`id` = relation_id;
 END$$
 
 DELIMITER ;
@@ -239,7 +264,7 @@ INSERT INTO `available_items` (`id`, `name`, `description`, `price`, `stock`) VA
 (3, 'Oak Wood Rocking Chair', 'It rocks.', 34.99, 5),
 (4, 'Maple Stool', 'A wonderful stool made of maple.', 19.99, 0),
 (6, 'Oak Wood Table', 'A table made out of oak wood!', 50, 2),
-(7, 'tmp', 'tmmmmp', 1, 1);
+(8, 'Test', 'test item', 0.01, 10);
 
 -- --------------------------------------------------------
 
@@ -311,7 +336,7 @@ INSERT INTO `item_material_relations` (`id`, `item_id`, `material_id`, `quantity
 (3, 1, 1, 1),
 (4, 1, 2, 10),
 (5, 3, 1, 2),
-(6, 3, 2, 15);
+(6, 3, 2, 16);
 
 -- --------------------------------------------------------
 
@@ -333,7 +358,8 @@ CREATE TABLE `materials` (
 INSERT INTO `materials` (`id`, `name`, `quantity`, `units`) VALUES
 (1, 'Oak Wood', 100, 'Logs'),
 (2, 'Nails', 33, 'Nails'),
-(3, 'Maple Wood', 50, 'Logs');
+(3, 'Maple Wood', 50, 'Logs'),
+(6, 'Glue', 101, 'Sticks');
 
 -- --------------------------------------------------------
 
@@ -450,7 +476,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `available_items`
 --
 ALTER TABLE `available_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `customer_info`
@@ -468,13 +494,13 @@ ALTER TABLE `customer_orders`
 -- AUTO_INCREMENT for table `item_material_relations`
 --
 ALTER TABLE `item_material_relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `order_item_relations`
