@@ -217,7 +217,7 @@
         </div>
     </div>
     <h3>Edit Item Material Relations</h3>
-    <table><tr><th>Item Name</th><th>Material Name</th><th>Quantity</th><th>Units</th>
+    <table><tr><th>Item Name</th><th>Material Name</th><th>Quantity</th>
     <?php
 
         $query = "CALL `select_all_item_material_info`()";
