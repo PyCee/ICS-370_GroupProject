@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2020 at 09:17 PM
+-- Generation Time: Nov 11, 2020 at 08:07 PM
 -- Server version: 10.1.35-MariaDB
 -- PHP Version: 7.2.9
 
@@ -118,6 +118,11 @@ INSERT INTO `order_item_relations`(`order_id`, `item_id`, `quantity_ordered`) VA
                                                                                       
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `return_order` (IN `order_id` INT)  NO SQL
+BEGIN
+UPDATE `customer_orders` SET `status`='returned' WHERE `customer_orders`.`id` = order_id;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `select_all_items` ()  READS SQL DATA
 BEGIN
 SELECT * FROM `available_items`;
@@ -136,6 +141,11 @@ END$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `select_all_materials` ()  NO SQL
 BEGIN
 SELECT * FROM `materials`;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `select_all_orders` ()  NO SQL
+BEGIN
+SELECT `customer_orders`.`id` FROM `customer_orders` ORDER BY `customer_orders`.`id` DESC;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `select_customer_info` (IN `customer_id` INT)  READS SQL DATA
@@ -264,7 +274,8 @@ INSERT INTO `available_items` (`id`, `name`, `description`, `price`, `stock`) VA
 (3, 'Oak Wood Rocking Chair', 'It rocks.', 34.99, 5),
 (4, 'Maple Stool', 'A wonderful stool made of maple.', 19.99, 0),
 (6, 'Oak Wood Table', 'A table made out of oak wood!', 50, 2),
-(8, 'Test', 'test item', 0.01, 10);
+(8, 'Testttt', 'test item', 0.02, 10),
+(9, 'Oak Wood Foot Rest', 'Foot rest made out of oak wood.', 20, 5);
 
 -- --------------------------------------------------------
 
@@ -299,7 +310,7 @@ INSERT INTO `customer_info` (`id`, `customer_id`, `street_address`, `city`, `sta
 CREATE TABLE `customer_orders` (
   `id` int(11) NOT NULL,
   `customer_id` int(11) NOT NULL,
-  `status` enum('being_made','processing','shipped','delivered') NOT NULL
+  `status` enum('being_made','processing','shipped','delivered','returned') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -308,7 +319,7 @@ CREATE TABLE `customer_orders` (
 
 INSERT INTO `customer_orders` (`id`, `customer_id`, `status`) VALUES
 (1, 2, 'delivered'),
-(11, 2, 'processing'),
+(11, 2, 'delivered'),
 (12, 2, 'processing'),
 (13, 2, 'being_made'),
 (14, 7, 'processing');
@@ -336,7 +347,9 @@ INSERT INTO `item_material_relations` (`id`, `item_id`, `material_id`, `quantity
 (3, 1, 1, 1),
 (4, 1, 2, 10),
 (5, 3, 1, 2),
-(6, 3, 2, 16);
+(6, 3, 2, 16),
+(11, 9, 1, 1),
+(12, 9, 6, 4);
 
 -- --------------------------------------------------------
 
@@ -359,7 +372,7 @@ INSERT INTO `materials` (`id`, `name`, `quantity`, `units`) VALUES
 (1, 'Oak Wood', 100, 'Logs'),
 (2, 'Nails', 33, 'Nails'),
 (3, 'Maple Wood', 50, 'Logs'),
-(6, 'Glue', 101, 'Sticks');
+(6, 'Glue', 200, 'Sticks');
 
 -- --------------------------------------------------------
 
@@ -476,7 +489,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `available_items`
 --
 ALTER TABLE `available_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `customer_info`
@@ -494,7 +507,7 @@ ALTER TABLE `customer_orders`
 -- AUTO_INCREMENT for table `item_material_relations`
 --
 ALTER TABLE `item_material_relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `materials`
