@@ -21,7 +21,7 @@
         }
     ?>
 
-    <p>Manage Orders</p>
+    <h3>Manage Orders</h3>
     <?php 
         $query = "CALL `select_all_orders`()";
         mysqli_multi_query($conn, $query) or die(mysqli_error($conn));

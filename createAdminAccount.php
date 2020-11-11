@@ -1,4 +1,6 @@
 <?php
+    include("./force_login.php");
+    global $user_id;
     include_once("./sqlInit.php");
     global $conn;
     include("./header.php");
