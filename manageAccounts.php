@@ -98,7 +98,7 @@
                 <tr>
                     <td><b>Username:</b></td>
                     <td>
-                        <input style='width: 300px;' type='text' id='typeAcc' name='typeAcc' value= '".$row[1]. "' required>
+                        <input style='width: 300px;' type='text' id='uname' name='uname' value= '".$row[1]. "' required>
                     </td>
                 </tr> 
                 <tr>
