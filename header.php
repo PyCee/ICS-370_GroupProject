@@ -39,7 +39,9 @@
                         <a href='editCustomerInfo.php'>Change Customer Details</a>";
                     break;
                 case "transportation_associate":
-                    $navbar_html .= "transportation_associate";
+                    $navbar_html .= "
+                        <a href='index.php'>Home</a>
+                        <a href='updateOrderStatus.php'>Update Order Status</a>";
                     break;
                 default:
                     $navbar_html .= "User role '".$user_role."' not recognized";

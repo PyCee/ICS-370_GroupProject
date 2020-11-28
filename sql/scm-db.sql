@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 11, 2020 at 08:07 PM
+-- Generation Time: Nov 28, 2020 at 05:34 AM
 -- Server version: 10.1.35-MariaDB
 -- PHP Version: 7.2.9
 
@@ -62,6 +62,11 @@ SELECT COUNT(`order_item_relations`.`id`) INTO order_item_count FROM `order_item
 DELETE FROM `customer_orders` WHERE `customer_orders`.`id` = order_id AND order_item_count = 0;
 
 
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deliver_order` (IN `order_id` INT)  NO SQL
+BEGIN
+UPDATE `customer_orders` SET `status`='delivered' WHERE `customer_orders`.`id` = order_id;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_material` (IN `name` VARCHAR(32), IN `qty` INT, IN `units` VARCHAR(24))  NO SQL
@@ -269,13 +274,13 @@ CREATE TABLE `available_items` (
 --
 
 INSERT INTO `available_items` (`id`, `name`, `description`, `price`, `stock`) VALUES
-(1, 'Oak Wood Chair', 'An Oak Wood Chair is the best kind of chair.', 29.97, 100),
+(1, 'Oak Wood Chair', 'An Oak Wood Chair is the best kind of chair.', 20, 100),
 (2, 'Maple Wood Chair', 'Maple is better than oak!', 29.98, 21),
 (3, 'Oak Wood Rocking Chair', 'It rocks.', 34.99, 5),
 (4, 'Maple Stool', 'A wonderful stool made of maple.', 19.99, 0),
 (6, 'Oak Wood Table', 'A table made out of oak wood!', 50, 2),
-(8, 'Testttt', 'test item', 0.02, 10),
-(9, 'Oak Wood Foot Rest', 'Foot rest made out of oak wood.', 20, 5);
+(9, 'Oak Wood Foot Rest', 'Foot rest made out of oak wood.', 20, 5),
+(11, 'Test item', 'test', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -318,11 +323,11 @@ CREATE TABLE `customer_orders` (
 --
 
 INSERT INTO `customer_orders` (`id`, `customer_id`, `status`) VALUES
-(1, 2, 'delivered'),
+(1, 2, 'returned'),
 (11, 2, 'delivered'),
-(12, 2, 'processing'),
-(13, 2, 'being_made'),
-(14, 7, 'processing');
+(12, 2, 'delivered'),
+(13, 2, 'processing'),
+(14, 7, 'delivered');
 
 -- --------------------------------------------------------
 
@@ -342,14 +347,15 @@ CREATE TABLE `item_material_relations` (
 --
 
 INSERT INTO `item_material_relations` (`id`, `item_id`, `material_id`, `quantity_of_material_required`) VALUES
-(1, 2, 3, 1),
-(2, 2, 2, 10),
+(1, 2, 3, 2),
+(2, 2, 2, 23),
 (3, 1, 1, 1),
 (4, 1, 2, 10),
 (5, 3, 1, 2),
 (6, 3, 2, 16),
 (11, 9, 1, 1),
-(12, 9, 6, 4);
+(12, 9, 6, 4),
+(14, 11, 6, 5);
 
 -- --------------------------------------------------------
 
@@ -370,7 +376,7 @@ CREATE TABLE `materials` (
 
 INSERT INTO `materials` (`id`, `name`, `quantity`, `units`) VALUES
 (1, 'Oak Wood', 100, 'Logs'),
-(2, 'Nails', 33, 'Nails'),
+(2, 'Nails', 40, 'Nails'),
 (3, 'Maple Wood', 50, 'Logs'),
 (6, 'Glue', 200, 'Sticks');
 
@@ -399,7 +405,8 @@ INSERT INTO `order_item_relations` (`id`, `order_id`, `item_id`, `quantity_order
 (28, 12, 4, 1),
 (31, 12, 3, 2),
 (32, 13, 1, 1),
-(33, 14, 1, 1);
+(33, 14, 1, 1),
+(34, 13, 11, 2);
 
 -- --------------------------------------------------------
 
@@ -425,9 +432,9 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `phone_number`, `role`, `first_name`, `last_name`) VALUES
 (1, 'Kim', 'password', 'yk4510kf@go.minnstate.edu', '', 'administrator', 'Kim', 'Pampusch'),
 (2, 'Bobby123', 'password', 'bobby@gmail.com', '6513333333', 'customer', 'Bobbyyyy', 'OneTwoThree'),
-(7, 'user_test', 'password', 'gmail@gmail.com', '123', 'customer', 'kim', 'Pamp'),
+(7, 'user_test', 'password', 'gmaillllll@gmail.com', '123', 'customer', 'kim', 'Pamp'),
 (10, 'driverrr', 'password', 'iDrive@gmail.com', '6511111111', 'transportation_associate', 'drive', 'car'),
-(11, 'admin', 'password', 'admin@gmail.com', '6125555555', 'administrator', 'ad', 'min');
+(12, 'test_admin', 'password', 'a@gmail.com', '65148784545', '', 'admin', 'min');
 
 --
 -- Indexes for dumped tables
@@ -489,7 +496,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `available_items`
 --
 ALTER TABLE `available_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `customer_info`
@@ -507,7 +514,7 @@ ALTER TABLE `customer_orders`
 -- AUTO_INCREMENT for table `item_material_relations`
 --
 ALTER TABLE `item_material_relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `materials`
@@ -519,13 +526,13 @@ ALTER TABLE `materials`
 -- AUTO_INCREMENT for table `order_item_relations`
 --
 ALTER TABLE `order_item_relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
