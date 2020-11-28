@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 28, 2020 at 05:34 AM
+-- Generation Time: Nov 28, 2020 at 06:07 AM
 -- Server version: 10.1.35-MariaDB
 -- PHP Version: 7.2.9
 
@@ -184,13 +184,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `select_order_info` (IN `order_id` I
     DETERMINISTIC
 BEGIN
 
-SELECT `order_item_relations`.`id`, `available_items`.`name` AS 'item',
-`order_item_relations`.`quantity_ordered` AS 'QTY',
-ROUND(`available_items`.`price`, 2) AS 'Price' 
+SELECT `order_item_relations`.`id`, `available_items`.`name` AS 'item', `order_item_relations`.`quantity_ordered` AS 'QTY',
+ROUND(`available_items`.`price`, 2) AS 'Price'
 FROM `order_item_relations` LEFT JOIN `available_items` 
 ON (`order_item_relations`.`item_id` = `available_items`.`id`)
 WHERE `order_item_relations`.`order_id` = order_id;
 
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `select_order_shipping_info` (IN `order_id` INT)  READS SQL DATA
+    DETERMINISTIC
+BEGIN
+DECLARE user_id int;
+SELECT `customer_orders`.`customer_id` INTO user_id FROM `customer_orders` WHERE `customer_orders`.`id` = order_id LIMIT 1;
+CALL `select_shipping_info`(user_id);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `select_order_status` (IN `order_id` INT)  READS SQL DATA
@@ -326,8 +333,10 @@ INSERT INTO `customer_orders` (`id`, `customer_id`, `status`) VALUES
 (1, 2, 'returned'),
 (11, 2, 'delivered'),
 (12, 2, 'delivered'),
-(13, 2, 'processing'),
-(14, 7, 'delivered');
+(13, 2, 'delivered'),
+(14, 7, 'delivered'),
+(15, 2, 'processing'),
+(16, 7, 'processing');
 
 -- --------------------------------------------------------
 
@@ -406,7 +415,11 @@ INSERT INTO `order_item_relations` (`id`, `order_id`, `item_id`, `quantity_order
 (31, 12, 3, 2),
 (32, 13, 1, 1),
 (33, 14, 1, 1),
-(34, 13, 11, 2);
+(34, 13, 11, 2),
+(35, 15, 9, 3),
+(36, 15, 2, 4),
+(37, 16, 11, 1),
+(38, 16, 3, 5);
 
 -- --------------------------------------------------------
 
@@ -508,7 +521,7 @@ ALTER TABLE `customer_info`
 -- AUTO_INCREMENT for table `customer_orders`
 --
 ALTER TABLE `customer_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `item_material_relations`
@@ -526,7 +539,7 @@ ALTER TABLE `materials`
 -- AUTO_INCREMENT for table `order_item_relations`
 --
 ALTER TABLE `order_item_relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `users`

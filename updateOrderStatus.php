@@ -40,14 +40,24 @@
             foreach($order_ids as $order_id){
                 
                 echo "<h3>Order ID: #".$order_id."</h3>";
-                echo "&nbsp&nbsp&nbsp&nbsp&nbsp";
                 echo "<form action='' method='post'>
                         <button type='submit' name='deliver_order_id' value=".$order_id.">
                             Mark Order As Delivered
                         </button>
                     </form>";
+                
+                $query = "CALL `select_order_shipping_info`(".$order_id.");";
+                mysqli_multi_query($conn, $query) or die(mysqli_error($conn));
+                $result = mysqli_store_result($conn);
+                $row = mysqli_fetch_row($result);
+                echo "<p>To: ".$row[0] . " " .$row[1]."<br>" . $row[2] . "<br>" . 
+                    $row[3] . ", " . $row[4] . " " .$row[5]."</p>";
+                
+                while($row = mysqli_fetch_row($result)){}
+                mysqli_free_result($result);
+                while (mysqli_next_result($conn));
 
-                echo "</h3>";
+
                 echo "<table><tr>
                 <th>Item Name</th>
                 <th>Item Quantity</th>";
