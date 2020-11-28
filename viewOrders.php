@@ -66,7 +66,8 @@
                 echo "<table><tr>
                 <th>Item Name</th>
                 <th>Item Quantity</th>
-                <th>Item Price</th>";
+                <th>Item Price</th>
+                <th>Item Total Price</th>";
                 if($order_status == 'being_made'){
                     echo "<th>Actions</th>";
                 }
@@ -75,11 +76,14 @@
                 $query = "CALL `select_order_info`(".$order_id.");";
                 mysqli_multi_query($conn, $query) or die(mysqli_error($conn));
                 $result = mysqli_store_result($conn);
+                $total_price = 0.0;
                 while($row = mysqli_fetch_row($result)){
                     echo "<tr>";
                     echo "<td style='width: 250px;'>".$row[1]."</td>";
                     echo "<td style='width: 150px;'>".$row[2]."</td>";
-                    echo "<td style='width: 100px;'>".$row[3]."</td>";
+                    echo "<td style='width: 100px;'>$".$row[3]."</td>";
+                    $total_item_price = $row[3] * $row[2];
+                    echo "<td style='width: 100px;'>$".$total_item_price."</td>";
                     if($order_status == 'being_made'){
                         echo "<td style='width: 200px;'>
                         <form action='' method='post'>
@@ -88,11 +92,13 @@
                         </td>";
                     }
                     echo "</tr>";
+                    $total_price += $total_item_price;
                 }
                 mysqli_free_result($result);
                 while (mysqli_next_result($conn));
 
-                echo "</table><br><br>";
+                echo "</table>";
+                echo "<p>Total order cost: $".$total_price."</p><br><br>";
 
             }
         }

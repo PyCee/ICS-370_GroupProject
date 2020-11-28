@@ -31,7 +31,7 @@
             echo "<tr>";
             echo "<td style='width: 200px;'>".$row[1]."</td>";
             echo "<td style='width: 250px;'>".$row[2]."</td>";
-            echo "<td style='width: 75px;'>".$row[3]."</td>";
+            echo "<td style='width: 75px;'>$".$row[3]."</td>";
             echo "<form action='' method='post'>
                 <td style='width: 50px;'>
                     <input type='number' name='qty' min='0' max='99'>
